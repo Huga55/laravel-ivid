@@ -79,32 +79,31 @@
 					</button>
 				</div>
 			</div>
-				<div class="office__bottom window">
-					<ul class="office__nav">
-						<li class="office__elem">
-							<a href="#" data-status="3" class="office__link office__link_first">
-								Все оплаты
-							</a>
-						</li>
-						<li class="office__elem">
-							<a href="#" data-status="0" class="office__link">
-								Успешные оплаты
-							</a>
-						</li>
-						<li class="office__elem">
-							<a href="#" data-status="1" class="office__link">
-								Неуспешные оплаты
-							</a>
-						</li>
-					</ul>
-					<img class="office__preloader" src="{{ asset('img/other/preloader.gif') }}" alt="">
-					<div class="office__table table">
-						
-					</div>
-					<button class="office__add button" data-status="3">
-						Показать еще оплаты
-					</button>
+			<div class="office__bottom window">
+				<ul class="office__nav">
+					<li class="office__elem">
+						<a href="#" data-status="3" class="office__link office__link_first">
+							Все оплаты
+						</a>
+					</li>
+					<li class="office__elem">
+						<a href="#" data-status="0" class="office__link">
+							Успешные оплаты
+						</a>
+					</li>
+					<li class="office__elem">
+						<a href="#" data-status="1" class="office__link">
+							Неуспешные оплаты
+						</a>
+					</li>
+				</ul>
+				<img class="office__preloader" src="{{ asset('img/other/preloader.gif') }}" alt="">
+				<div class="office__table table">
+					
 				</div>
+				<button class="office__add button" data-status="3">
+					Показать еще оплаты
+				</button>
 			</div>
 		</div>
 	</div>

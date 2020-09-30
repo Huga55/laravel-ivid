@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+<<<<<<< HEAD
+// main pages
+=======
 // main page
+>>>>>>> 513defe4ed8461fcee63536e640df58ef3b51e3a
 Route::get('/', 'MainController@main')->name('main');
 Route::get('/solution', 'MainController@solution')->name('solution');
 Route::get('/contact', 'MainController@contact')->name('contact');
@@ -47,6 +51,10 @@ Route::group(['middleware' => 'auth','prefix' => 'lk', 'namespace' => 'lk'], fun
 	Route::put('/autopay/off', 'AutopayController@off')->name('auto.off');
 });
 
+<<<<<<< HEAD
+//all pays
+=======
+>>>>>>> 513defe4ed8461fcee63536e640df58ef3b51e3a
 Route::group(['namespace' => 'pay'], function() {
 	//оплата внутреннего кошелька
 	Route::post('/pay/purse', 'PayController@purseUp')->name('pay.purse.up');
@@ -60,14 +68,30 @@ Route::group(['namespace' => 'pay'], function() {
 	Route::get('/pay/tariff/fail', 'PayController@payFail')->name('pay.tariff.fail');
 });
 
+<<<<<<< HEAD
+//admin
+Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
+	Route::get('/', 'AdminController@author')->name('admin.author');
+	Route::group(['middleware' => 'isAdmin'], function() {
+		Route::get('/main', 'AdminController@main')->name('admin.main');
+		Route::get('/main/operations/{count}/{status}', 'AdminController@getOperations')->name('admin.operations');
+		Route::get('/search', 'AdminController@searchPage')->name('admin.search');
+		Route::get('/search/result/{name}', 'AdminController@getResult')->name('admin.search.result');
+	});
+=======
 Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
 	
+>>>>>>> 513defe4ed8461fcee63536e640df58ef3b51e3a
 });
 
 
 
 
+<<<<<<< HEAD
+//404
+=======
 
+>>>>>>> 513defe4ed8461fcee63536e640df58ef3b51e3a
 Route::get('/404', function() {
 	return "404 error";
 })->name('404');
