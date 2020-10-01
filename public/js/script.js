@@ -12,6 +12,12 @@ $(".button_disabled").click(function(e) {
 	checkAgreeOffer(e, ".button_disabled");
 });*/
 
+/* NAV меню и бургер */
+
+$(".burger").click(function() {
+	$(".burger").toggleClass("burger_active");
+	$(".header__top").toggleClass("header__top_active");
+});
 
 /* ВВОД В ИНПУТ НОМЕР ТЕЛЕФОНА */
 

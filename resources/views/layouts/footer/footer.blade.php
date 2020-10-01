@@ -24,7 +24,7 @@
 			</a>
 		</div>
 	</footer>
-	<footer class="footer" id="footer">
+	<footer class="footer none" id="footer">
 		<span class="footer__line line"></span>
 		<div class="container">
 			<div class="footer__content">

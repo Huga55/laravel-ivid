@@ -85,6 +85,7 @@ class AdminController extends Controller
 
 	public function getResult($name)
 	{
-		return $name;
+		$result = User::where('email', 'like', '%' . $name . '%')->get();
+		return $result;
 	}
 }

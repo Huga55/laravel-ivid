@@ -25,7 +25,9 @@
 	<link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
+	<div class="wrapper">
 		@yield('content')
+	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 	<script src="{{ asset('js/script.js') }}"></script>
 </body>

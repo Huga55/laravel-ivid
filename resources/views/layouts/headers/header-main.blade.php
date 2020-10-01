@@ -15,9 +15,10 @@
 			<div class="header__buttons">
 				<a href="{{ route('author') }}" class="header__button button_gray">Личный кабинет</a>
 				<a href="#" class="header__button button_gray">Перезвоните мне</a>
-			</div>	
+			</div>
 		</div>
 	</div>
+	<div class="burger mobile"><span class="burger__line"></span></div>	
 </header>
 <main class="main" id="main">	
 
