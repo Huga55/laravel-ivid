@@ -2,9 +2,9 @@
 	<div class="header-lk__line">
 		
 	</div>
-	<div class="container">
+	<div class="container header-lk__container">
 		<div class="header-lk__top">
-		<a href="{{ route('main') }}" class="header-lk__link-main"><img src="../img/header/logo-lk.svg" alt="" class="header-lk__logo"></a>
+			<a href="{{ route('main') }}" class="header-lk__link-main"><img src="../img/header/logo-lk.svg" alt="" class="header-lk__logo"></a>
 		</div>
 		<div class="header-lk__bottom">
 			<ul class="header-lk__nav">
@@ -55,4 +55,5 @@
 			</div>
 		</div>
 	</div>
+	<div class="burger burger_lk mobile"><span class="burger__line"></span></div>	
 </section>

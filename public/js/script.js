@@ -17,6 +17,7 @@ $(".button_disabled").click(function(e) {
 $(".burger").click(function() {
 	$(".burger").toggleClass("burger_active");
 	$(".header__top").toggleClass("header__top_active");
+	$(".header-lk__nav").toggleClass("header-lk__nav_active");
 });
 
 /* ВВОД В ИНПУТ НОМЕР ТЕЛЕФОНА */

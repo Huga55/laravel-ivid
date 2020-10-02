@@ -54,7 +54,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="container">
+	<div class="container tariff__container">
 		<div class="tariff__choice">
 			<div class="tariff__choice-box tariff__choice-box_first" data-season="1">
 				1 месяц
