@@ -11,9 +11,9 @@
 				<div class="author__title form-title">
 					Вход для администрации сайта
 				</div>
-				<form action="{{ route('enter') }}" class="author__form" method="post">
+				<form action="{{ route('admin.author') }}" class="author__form" method="post">
 					{{ csrf_field() }}
-					<input type="text" name="login" class="input form-input author__input author__email author__input_email_a" placeholder="Email или телефон">
+					<input type="text" name="login" class="input form-input author__input author__email author__input_email_a" placeholder="Email">
 					<input type="password" name="password" class="input form-input author__input author__pass author__input_password_a" placeholder="Пароль">
 					<input type="submit" class="form-button autor__button button button_blue" value="Войти">
 					<input class="registr__agree" type="checkbox" name="agree" id="agree">

@@ -15,6 +15,9 @@ class isAdmin
      */
     public function handle($request, Closure $next)
     {
+        if(!$request->session()->has('admin') && !$request->session()->get('admin')) {
+            return redirect(route('admin.author'));
+        }
         return $next($request);
     }
 }

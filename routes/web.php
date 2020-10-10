@@ -67,12 +67,13 @@ Route::group(['namespace' => 'pay'], function() {
 
 /* admin */
 Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
-	Route::get('/', 'AdminController@author')->name('admin.author');
+	Route::match(['get', 'post'], '/login', 'AdminController@author')->name('admin.author');
 	Route::group(['middleware' => 'isAdmin'], function() {
-		Route::get('/main', 'AdminController@main')->name('admin.main');
-		Route::get('/main/operations/{count}/{status}', 'AdminController@getOperations')->name('admin.operations');
+		Route::get('/', 'AdminController@main')->name('admin.main');
+		Route::get('/operations/{count}/{status}', 'AdminController@getOperations')->name('admin.operations');
 		Route::get('/search', 'AdminController@searchPage')->name('admin.search');
 		Route::get('/search/result/{name}', 'AdminController@getResult')->name('admin.search.result');
+		Route::get('/user-page/{id}', 'AdminController@getUserPage')->name('admin.get.user.page');
 	});
 });
 

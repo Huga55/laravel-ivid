@@ -8,11 +8,28 @@ use Illuminate\Http\Request;
 use App\Models\Operation;
 use App\Models\Tariff;
 use App\Models\User;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     public function author(Request $request)
     {
+    	if($request->session()->has('admin') && $request->session()->get('admin')) {
+    		return redirect(route('admin.main'));
+    	}
+    	if($request->has('login') && $request->has('password') &&
+    		$request->input('agree')) {
+    		$login = $request->input('login');
+    		$password = md5($request->input('password'));
+    		$result = Admin::where('login', $login)
+    						->where('password', $password)
+    						->get();
+			if(count($result) !== 0) {
+				session(['admin' => true]);
+				return redirect(route('admin.main'));
+			}
+    	}
     	return view('admin.auth');
     }
 
@@ -86,6 +103,24 @@ class AdminController extends Controller
 	public function getResult($name)
 	{
 		$result = User::where('email', 'like', '%' . $name . '%')->get();
-		return $result;
+		$table = "<tr><th>name</th><th>email</th><th>phone</th></tr>";
+		foreach ($result as $key => $value) {
+			$link = route("admin.get.user.page", ['email' => $value['id']]);
+			$table .= 
+			"<tr>
+				<td>{$value['name']}</td>
+				<td>{$value['email']}</td>
+				<td>{$value['phone']}</td>
+				<td><a href=" . '"' . $link . '"' . ">Войти</a></td>
+			</tr>";
+		}
+		return $table;
+	}
+
+	public function getUserPage($id)
+	{	
+		return $id;
+		Auth::loginUsingId($id);
+        return redirect()->route('office');
 	}
 }

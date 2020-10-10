@@ -133,6 +133,7 @@ $(".search__input").change(function() {
     },
     success: function (data) {
       console.log(data);
+      $(".search__table").html(data);
     },
     error: function (msg) {
       console.log("Для разработчика! Ошибка при запросе операций пользователя: ")
