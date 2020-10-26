@@ -25,7 +25,7 @@
 	<div class="popup__content">
 		<form class="popup__form popup__form-auto" method="POST" action="">
 			<span class="popup__close"></span>
-			<img src="img/popup/cart.svg" alt="" class="popup__img-auto">
+			<img src="{{ asset('img/popup/cart.svg') }}" alt="" class="popup__img-auto">
 			<div class="popup__title popup__title_auto">
 				Вы уверены, что хотите отключить автопродление ?
 			</div>
@@ -39,6 +39,38 @@
 			</div>
 		</form>
 	</div>	
+</div>
+<div class="popup popup_auto-pay-ok">
+	<div class="popup__bg">
+		
+	</div>
+	<div class="popup__content">
+		<div class="popup__form popup__form-auto">
+			<span class="popup__close"></span>
+			<img src="{{ asset('img/popup/complete.svg') }}" alt="" class="popup__img-auto">
+			<div class="popup__title popup__title_auto">
+				Автопродление отключено
+			</div>
+			<div class="popup__subtitle">
+				С сегодняшнего дня мы больше не будем снимать деньги с Вашей карты
+			</div>
+		</div>
+	</div>	
+</div>
+<div class="modal">
+	<div class="modal__bg"></div>
+	@if($result_pay['is_exist'] && $result_pay['result'])
+	<div class="modal-success__window modal-pay__window modal-success__window-tariff">
+		<span class="popup__close"></span>
+		<img src="{{ asset('img/modal/success.svg') }}" alt="" class="modal__img">
+		<div class="modal-pay__title">
+			Тариф «{{ $result_pay['tariff_name'] }}» успешно оплачен
+		</div>
+		<div class="modal__text">
+			на сумму {{ $result_pay['price'] }} рублей, до {{ $result_pay['date_next_pay'] }} 
+		</div>
+	</div>
+	@endif
 </div>
 @include('layouts.headers.header-lk')
 <section class="tariff section">
@@ -196,7 +228,7 @@
 				Для вашего удобства мы можем автоматически продлевать установленный вами тарифный план на данной камере с помощью списания денег с вашего баланса или привязанной к аккаунту банковской карты.
 			</div>
 			<div class="tariff__buttons">
-				<form action="{{ route('pay.tariff') }}" method="POST">
+				<form action="{{ route('pay.tariff') }}" class="tariff__form-autopay" method="POST">
 					{{ csrf_field() }}
 					<input type="hidden" name="price">
 					<input type="hidden" name="month">
@@ -217,4 +249,5 @@
 		</div>
 	</div>
 </section>
+@include('layouts.footer.footer-lk')
 @endsection

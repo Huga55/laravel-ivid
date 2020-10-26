@@ -45,7 +45,7 @@
 					<input type="password" name="password" class="input form-input registr__input_password" placeholder="Введите пароль">
 					<input type="password" name="password_double" class="input form-input registr__input_password_double" placeholder="Повторите пароль">
 					<button type="submit" class="button form-button registr__button button_blue">Зарегистрироваться</button>
-					<input class="registr__agree" type="checkbox" name="agree" id="agree">
+					<input class="registr__agree" type="checkbox" name="agree" id="agree" checked>
 					<label for="agree" class="registr__check">Нажимая на кнопку, вы даете согласие на<a class="registr__link-contract" href="">Обработку персональных данных</a></label>
 				</form>
 			</div>

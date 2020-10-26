@@ -15,10 +15,18 @@ class OfficeController extends Controller
 	public function get(Request $request)
 	{
 		$user = Auth::user();
+		$tariff_name = $user->info->tariff->name;
+		//модальные окна результат опалты
+		$result_pay = ['is_exist' => false];
+		if($request->session()->has('pay_purse')) {
+			$result_pay = $request->session()->get('pay_purse');
+		}
 
 		return view('lk/main', [
 			'user' => $user,
 			'month' => $user->info->month,
+			'result_pay' => $result_pay,
+			'tariff_name' => $tariff_name,
 		]);
 	}
 
@@ -60,8 +68,9 @@ class OfficeController extends Controller
 							->sortByDesc('id')
 							->where('status', '!=', $status)
 							->take($count);
-
-		return $this->createTable($operations, $email);
+		$countAllOperations = $user->operation->where('status', '!=', $status)->count();
+		return ['table' => $this->createTable($operations, $email), 
+				'count' => $countAllOperations];
 	}
 
 	private function createTable($operations, $email)

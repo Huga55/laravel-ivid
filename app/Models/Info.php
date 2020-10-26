@@ -25,7 +25,7 @@ class Info extends Model
 
     public function tariff()
     {
-        return $this->belongsTo("App\Models\Tariff");
+        return $this->hasOne("App\Models\Tariff", 'id', 'tariff_id');
     }
 
 }

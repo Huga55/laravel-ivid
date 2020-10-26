@@ -19,7 +19,7 @@ class AdminsTableSeeder extends Seeder
         DB::table('admins')->insert([
         	[
         		'login' => 'admin',
-        		'password' => md5('admin'),
+        		'password' => md5('zxcvb12345'),
         	],
         ]);
     }

@@ -24,6 +24,7 @@ class CreateOperationsTable extends Migration
             $table->string('transaction_id')->default("0");
             $table->integer('month');
             $table->boolean('pay_with_autopay');
+            $table->string('token');
             $table->timestamps();
         });
     }

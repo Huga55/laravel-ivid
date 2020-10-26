@@ -23,6 +23,7 @@ class CreateScoresTable extends Migration
             $table->string("transaction_id");
             $table->boolean("up")->nullable()->default(null);
             $table->boolean("down")->nullable()->default(null);
+            $table->string('token');
             $table->timestamps();
         });
     }

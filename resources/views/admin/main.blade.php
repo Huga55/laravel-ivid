@@ -1,42 +1,30 @@
 @extends('admin.layouts.index')
 
 @section('content')
-<div class="top">
-	<div class="container">
-		<nav class="nav">
-			<form action="" class="nav__form" method__post>
-				<ul class="nav__list">
-					<li class="nav__elem"><a href="main.php" class="nav__link nav__link_active">Главная страница</a></li>
-					<li class="nav__elem"><a href="list" class="nav__link">Список клиентов</a></li>
-					<li class="nav__elem"><a href="date" class="nav__link">Статистика по клиентам</a></li>
-				</ul>
-			</form>	
-		</nav>
-	</div>
-</div>
+@include('admin.layouts.header')
 <div class="info">
 	<div class="container">
 		<div class="info__content">
 			<div class="info__left">
 				<div class="info__date">
-					Оплат за сегодня, 15 июля
+					Оплат за сегодня, {{ $day . " " . $month }}
 				</div>
 				<div class="info__salary">
-					4800 ₽
+					{{ $pay_today }} ₽
 				</div>
 			</div>
 			<div class="info__right">
 				<div class="info__block">
 					<div class="info__name">Всего клиентов</div>
-					<div class="info__index">14</div>
-				</div>|
-				<div class="info__block">
+					<div class="info__index">{{ $clients }}</div>
+				</div>
+				<div class="info__block info__block_irregular">
 					<div class="info__name">Кол-во платежей</div>
-					<div class="info__index">4</div>
-				</div>|
+					<div class="info__index">{{ $pays }}</div>
+				</div>
 				<div class="info__block">
 					<div class="info__name">Средняя сумма</div>
-					<div class="info__index">1200</div>
+					<div class="info__index">{{ $salary_avg }}</div>
 				</div>
 			</div>
 		</div>

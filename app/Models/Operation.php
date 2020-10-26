@@ -10,7 +10,7 @@ class Operation extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'date', 'time', 'price', 'tariff_id',
-  					'status', 'transaction_id', 'month', 'pay_with_autopay'];
+  					'status', 'transaction_id', 'month', 'pay_with_autopay', 'token'];
 
     public function user()
     {

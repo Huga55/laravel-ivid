@@ -14,7 +14,7 @@
 			</nav>
 			<div class="header__buttons">
 				<a href="{{ route('author') }}" class="header__button button_gray">Личный кабинет</a>
-				<a href="#" class="header__button button_gray">Перезвоните мне</a>
+				<a href="{{ route('call') }}" class="header__button button_gray">Перезвоните мне</a>
 			</div>
 		</div>
 	</div>

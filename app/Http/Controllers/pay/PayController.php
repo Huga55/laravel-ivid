@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Score;
 use App\Models\Operation;
 use App\Models\Tariff;
+use Illuminate\Support\Str;
 
 class PayController extends Controller
 {
@@ -15,6 +16,7 @@ class PayController extends Controller
     {
     	$price = $request->input('money');
     	$user = Auth::user();
+        $token = Str::random(20);
 
     	$operation = Score::create([
     		'user_id' => $user->id,
@@ -22,6 +24,7 @@ class PayController extends Controller
     		'time' => date('H:i:s'),
     		'price' => $price,
     		'status' => null,
+            'token' => $token,
     		'transaction_id' => 0,
     		'up' => 1,
     		'down' => 0,
@@ -33,7 +36,7 @@ class PayController extends Controller
     		//'terminal_key' => '1591465486121',
     		'order_id' => $operation->id,
     		'amount' => $price * 100,
-    		'success_url' => route('pay.purse.up.success'),
+    		'success_url' => route('pay.purse.up.success', ['token' => $token]),
     		'fail_url' => route('pay.purse.up.fail'),
     		'recurrent' => '',
     		'customer_key' => $user->id,
@@ -58,6 +61,7 @@ class PayController extends Controller
     	$month = $request->input('month');
     	$price = $request->input('price');
     	$user = Auth::user();
+        $token = Str::random(20);
 
     	$operation = Operation::create([
     		'user_id' => $user->id,
@@ -69,6 +73,7 @@ class PayController extends Controller
     		'transaction_id' => 0,
     		'month' => $month,
     		'pay_with_autopay' => 0,
+            'token' => $token,
     	]);
 
         $money = $user->info->money;
@@ -83,12 +88,13 @@ class PayController extends Controller
                 'transaction_id' => 0,
                 'up' => 0,
                 'down' => 1,
+                'token' => $token,
             ]);
 
             $user->info->money -= $price;
             $user->info->save();
             
-            return redirect()->route('pay.tariff.success');
+            return redirect()->route('pay.tariff.success', ['token' => $token]);
         }
 
     	$data_tinkoff = [
@@ -97,7 +103,7 @@ class PayController extends Controller
     		//'terminal_key' => '1591465486121',
     		'order_id' => $operation->id,
     		'amount' => $price * 100,
-    		'success_url' => route('pay.tariff.success'),
+    		'success_url' => route('pay.tariff.success', ['token' => $token]),
     		'fail_url' => route('pay.tariff.fail'),
     		'recurrent' => 'Y',
     		'customer_key' => $user->id,
@@ -153,16 +159,19 @@ class PayController extends Controller
 		return $result_curl;
 	}
 
-    public function purseSuccess(Request $request)
+    public function purseSuccess(Request $request, $token)
     {
     	$user = Auth::user();
 
     	$operation = Score::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-    	$operation->status = 1;
-    	$operation->user->info->money += $operation->price;
-    	$operation->save();
-    	$operation->user->info->save();
-
+        if($operation->token === $token) {
+            $operation->status = 1;
+            $operation->user->info->money += $operation->price;
+            $operation->save();
+            $operation->user->info->save();
+            //для модального окна
+            $this->setFlashRsultPay($request, 'pay_purse', true, $operation->price);
+        }
     	return redirect()->route('office');
     }
 
@@ -173,26 +182,32 @@ class PayController extends Controller
     	$operation = Score::where('user_id', $user->id)->orderBy('id', 'desc')->first();
     	$operation->status = 0;
     	$operation->save();
+        $this->setFlashRsultPay($request, 'pay_purse', false, $operation->price);
 
     	return redirect()->route('office');
     }
 
-    public function paySuccess(Request $request)
+    public function paySuccess(Request $request, $token)
     {
     	$user = Auth::user();
 
 
     	$operation = Operation::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-    	$operation->status = 1;
-    	$operation->save();
-    	$operation->user->info->status = 1;
-    	$operation->user->info->tariff_id = $operation->tariff_id;
-    	$operation->user->info->date_next_pay = date('Y-m-d', strtotime("+". $operation->month ." month"));
-    	$operation->user->info->price_next_pay = $operation->price;
-    	$operation->user->info->month = $operation->month;
-    	$operation->user->info->save();
+        if($operation->token === $token) {
+            $operation->status = 1;
+            $operation->save();
+            $operation->user->info->status = 1;
+            $operation->user->info->tariff_id = $operation->tariff_id;
+            $operation->user->info->date_next_pay = date('Y-m-d', strtotime("+". $operation->month ." month"));
+            $operation->user->info->price_next_pay = $operation->price;
+            $operation->user->info->month = $operation->month;
+            $operation->user->info->save();
+            //для модального окна
+            $this->setFlashRsultPay($request, 'pay_tariff', true, $operation->price,
+                $operation->user->info->date_next_pay, $operation->user->info->tariff->name);
+        }
 
-    	return redirect()->route('office');
+    	return redirect()->route('tariff');
     }
 
     public function payFail(Request $request)
@@ -203,6 +218,18 @@ class PayController extends Controller
     	$operation->status = 0;
     	$operation->save();
 
-    	return redirect()->route('office');
+    	return redirect()->route('tariff');
+    }
+
+    public function setFlashRsultPay($request, $typeResult, $result, $price, $date_next_pay = null,
+                                    $tariff_name = null)
+    {
+        $request->session()->flash($typeResult, [
+            'is_exist' => true,
+            'result' => $result,
+            'price' => $price,
+            'date_next_pay' => $date_next_pay,
+            'tariff_name' => $tariff_name,
+        ]);
     }
 }

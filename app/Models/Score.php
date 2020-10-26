@@ -15,7 +15,7 @@ class Score extends Model
    	* @var array
    	*/
   	protected $fillable = ['user_id', 'date', 'time', 'price',
-  					'status', 'transaction_id', 'up', 'down'];
+  					'status', 'transaction_id', 'up', 'down', 'token'];
 
     public function user()
     {

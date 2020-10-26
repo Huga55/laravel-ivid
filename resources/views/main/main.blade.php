@@ -2,6 +2,25 @@
 
 @section('content')
 @include('layouts.headers.header-main')
+<div class="popup">
+	<div class="popup__bg">
+		
+	</div>
+	<div class="popup__content">
+		<div class="popup__window">
+			<span class="popup__close"></span>
+			<div class="popup__img popup__img_accept">
+				
+			</div>
+			<div class="popup__title">
+				Ваша заявка оформлена
+			</div>
+			<div class="popup__text">
+				Совсем скоро мы с Вами свяжемся
+			</div>
+		</div>
+	</div>	
+</div>
 <section class="general" id="general">
 	<div class="container">
 		<h1 class="general__title">
@@ -18,8 +37,8 @@
 				И получите дополнительный терабайт на жестком диске бесплатно!
 			</div>
 			<form action="" class="order__form">
-				<input type="text" class="order__input input" placeholder="Ваше имя">
-				<input type="text" class="order__input input" placeholder="+7 (___) - __ - __">
+				<input type="text" name="name" class="order__input order__input_name input" placeholder="Ваше имя">
+				<input type="text" name="phone" class="order__input order__input_phone input" placeholder="+7 (___) - __ - __">
 				<button type="submit" class="order__button button button_blue">
 					Получить подарок
 				</button>
@@ -151,6 +170,14 @@
 		</div>
 	</div>
 </section>
+<div class="prompt registr__prompt">
+	<div class="prompt__title">
+		<div class="prmpt__title"></div>
+	</div>
+	<div class="prompt__desribe">
+		<div class="prompt__describe"></div>
+	</div>
+</div>
 @include('layouts.footer.footer')
 @endsection
 

@@ -1,48 +1,36 @@
+/* NAV меню и бургер */
 
-
-
-/* Модальные окна */
-
-emailGlobal = "";
-
-$(function(){
-  $(document).on("click", ".client__addition", function(e) {
-    $(".modal").addClass("modal_active");
-    $(".modal__bg").addClass("modal__bg_active");
-    $(".modal__client").addClass("modal__client_active");
-  });
+$(".burger").click(function() {
+  $(".burger").toggleClass("burger_active");
+  $(".header__top").toggleClass("header__top_active");
+  $(".header-lk__nav").toggleClass("header-lk__nav_active");
 });
 
+/* Удаление содержимого инпутов при удачной отправке данных */
 
-$(".modal__bg, .client-luck__button, .client-luck__close").click(function() {
-	deactiveAll();
-});
-
-
-
-$(".modal__button").click(function(event) {
-  event.preventDefault();
-  $(".modal__input_error").removeClass("modal__input_error");
-  $(".modal__prompt").html("");
-  let resultValid = validationForm($(this).parent());
-  if(resultValid[0]) {
-  
-    ajaxGive("operations.php", resultValid, true);
-    
-  }else {
-    giveErrors(resultValid, "modal");
-  }  
-})
-
-
-let deactiveAll = () => {
-  $(".modal__client").removeClass("modal__client_noactive");
-  $(".modal").removeClass("modal_active");
-  $(".modal__bg").removeClass("modal__bg_active");
-  $(".modal__bg").removeClass("modal__bg_active-double");
-  $(".modal__client").removeClass("modal__client_active");
-  $(".client-luck").removeClass("client-luck_active");
+let clearInputs = (inputs) => {
+  for(let i = 0; i < inputs.length; i++) {
+    inputs[i].value = "";
+  }
 }
+
+/* массовый клик на checkbox */
+$("#select-all").change(function() {
+  $(".search__checkbox").prop("checked", $(this).prop("checked"));
+});
+
+/* обработка и удаление пользователей из админ панели */
+
+$('.search__table').on('change', '.search__checkbox', function(e) {
+  let countChecked = $(".search__checkbox-user:checked").length;
+  if(countChecked) {
+    $(".delete").addClass("delete_active");
+    $(".delete__count").html(countChecked);
+  }else {
+    $(".delete_active").removeClass("delete_active");
+  }
+});
+
 
 /* Получение списка операций пользователей */
 
@@ -75,7 +63,14 @@ let getTable = (status, count = 4) => {
     },
     success: function (data) {
       $(".office__preloader_active").removeClass("office__preloader_active");
-      $(".office__table").html(data);
+      if(data.count !== 0) {
+        $(".office__table").html(data.table);
+      }else {
+        $(".office__table").html("Оплаты не найдены");
+      }
+      if(data.count < 5) {
+        $(".office__add").css("display", "none");
+      }
     },
     error: function (msg) {
       console.log("Для разработчика! Ошибка при запросе операций пользователя: ")
@@ -87,53 +82,117 @@ let getTable = (status, count = 4) => {
 $(".office__link_first").click();
 
 /* ВАЛИДАЦИЯ ФОРМЫ ДОБАВЛЕНИЯ КЛИЕНТОВ */
-let validationForm = (element) => {
-  let inputs = $(element).children(".input");
-  let info = {
-    name: "",
-    phone:"",
-    email: "",
-    password:""
-  };
-  let error = [false];
-  for(let input of inputs) {
-    error[0] = true;
-    if(input.value == "" && input.name !== "phone") {
-      error[0] = false;
-      error.push([input.name, "заполните поле"]);
-    }
-    info[input.name] = input.value;
-    if(input.name == "email") {
-      emailGlobal = input.value;
-    }
-  }
-  if(!error[0]) {
-    return error;
-  }else {
-    if(inputs[3].value !== inputs[4].value) {
-      error[0] = false;
-      error.push([inputs[3].name, "введенные пароли не совпадают"]);
-      error.push([inputs[4].name, "введенные пароли не совпадают"]);
+$(".add__form").submit(function(e) {
+  let data = {};
+  let error = 0;
+  let classNameForm = $(this).attr("class").replace(/(.*)__form$/, '$1');
 
-      return error;
+  e.preventDefault();
+
+  $(this).find('input').each(function() {
+    data[this.name] = $(this).val();
+    if(this.value == "" && (this.type === "text" || this.type === "password")) {
+      error = 1;//значит есть пустые инпуты
+      activePromtp("Не все поля заполнены",
+      "Заполните все необходимые поля", 
+      this.name, classNameForm);
     }
-  }
-  return JSON.stringify(info);
+  });
+
+  if(error == 0) {
+    let thisURL = $(location).attr('href');
+    validRegistr(thisURL, data, this, classNameForm);
+  }  
+});
+
+let validRegistr = (thisURL, data, form, classNameForm) => {
+  $.ajax({
+    url: thisURL + "/valid",
+    type: "POST",
+    data: data,
+    headers: {
+      'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function (data) {
+      if(data.result) {
+        activePopup("modal", data.email);
+        clearInputs($(".add__input"));
+      }
+    },
+    error: function (msg) {
+      console.log("Для разработчика! Ошибка при валидации регистрации")
+      console.log(msg);
+      let inputName = Object.keys(msg.responseJSON.errors)[0];
+      activePromtp("Неверно заполнено поле",
+        "Проверьте правильность заполнения",
+        inputName, classNameForm);
+    }
+  });
 }
 
+let activePromtp = (title, describe, input, className, time = 5000) => {
+  $("." + className + "__input_" + input).addClass("input_error");
+  $(".prompt").addClass("prompt_active");
+  $(".prompt__title").html(title);
+  $(".prompt__desribe").html(describe);
+  let timerId = setTimeout(() => deletePrompt(), time);
+
+  let deletePrompt = () => {
+    $("." + className + "__input_" + input).removeClass("input_error");
+    $(".prompt").removeClass("prompt_active");
+    $(".prompt__title").html("");
+    $(".prompt__desribe").html("");
+  }
+}
+
+let activePopup = (classPopup, email = false) => {
+  $("." + classPopup).addClass(classPopup + "_active");
+  $("." + classPopup + "__bg").addClass(classPopup + "__bg_active");
+  $("." + classPopup + "__window").addClass(classPopup + "__window_active");
+  if(email) {
+    $("." + classPopup + "__text").html("Клиент " + email + " успешно добавлен.");
+  }
+}
+
+let inactiveAllPopup = (classPopup) => {
+  $("." + classPopup + "_active").removeClass(classPopup + "_active");
+  $("." + classPopup + "__bg_active").removeClass(classPopup + "__bg_active");
+  $("." + classPopup + "__window_active").removeClass(classPopup + "__window_active");
+  clearInputs($(".add__input"));
+}
+
+$(".search__button").click(function() {
+  activePopup("add");
+})
+
+$(".add__button-cancel, .add__bg").click(function(e) {
+  e.preventDefault();
+  inactiveAllPopup("add");
+});
+
+$(".modal__bg, .modal__button").click(function() {
+  inactiveAllPopup("add");
+  inactiveAllPopup("modal");
+});
 /* поиск пользователей по имени */
 
-$(".search__input").change(function() {
+$(".search__input").keyup(function() {
   let thisURL = $(location).attr('href');
+  let endPoint;
+  if($(this).val() === "") {
+    endPoint = "0";
+  }else {
+    endPoint = $(this).val();
+  }
+
   $.ajax({
-    url: thisURL + "/result/" + $(this).val(),
+    url: thisURL + "/result/" + endPoint,
     type: "GET",
     headers: {
       'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
     },
     success: function (data) {
-      console.log(data);
-      $(".search__table").html(data);
+      $(".search__table-result").html(data);
     },
     error: function (msg) {
       console.log("Для разработчика! Ошибка при запросе операций пользователя: ")
@@ -141,6 +200,8 @@ $(".search__input").change(function() {
     }
   });
 });
+
+
 
 /* реализация ошибок в форме */
 
@@ -150,42 +211,6 @@ let giveErrors = (resultValid, nameSection) => {
     $("." + nameSection + "__prompt-" + resultValid[i][0]).html(resultValid[i][1]);
   }
 }
-
-/* Удаление содержимого инпутов при удачной отправке данных */
-
-let clearInputs = (inputs) => {
-  for(let i = 0; i < inputs.length; i++) {
-    inputs[i].value = "";
-  }
-}
-
-
-
-
-/* AJAX запросы */
-
-
-/* AJAX добавления новых клиентов */
-
-let ajaxGive = (path, give, isFromAdmin = false) => {
-  $.post(path, {client: give}, function (data) {
-      console.log(data);
-      if(data) {
-        clearInputs($(".modal__input"));
-        if(isFromAdmin) {
-          $(".modal__client").addClass("modal__client_noactive");
-          $(".client-luck").addClass("client-luck_active");
-          $(".modal__bg").addClass("modal__bg_active-double");
-          $(".clien-luck__email").html(emailGlobal);
-        }
-      }else {
-        let resultValid = [false, ["email", "пользователь с данным email уже существует"]];
-        giveErrors(resultValid, "modal");
-        console.log("Ошибка ajax: " + data);//для прогера
-      }
-    })
-};
-
 
 /* AJAX меню навигации */
 $(function () {
@@ -197,4 +222,42 @@ $(function () {
          $(".clients").html(data);
        })
     })
-})
+});
+
+/* ПОКАЗ СКРЫТИЕ ВЫХОД ИЗ ЛК */
+
+$(".header-lk__login").mousemove(function() {
+  $(".header-lk__add").addClass("header-lk__add_active");
+});
+
+$(".header-lk__login").mouseleave(function() {
+  $(".header-lk__add").removeClass("header-lk__add_active");
+});
+
+/* удаление пользователей админом */
+
+$(".delete__button").click(function() {
+  let idArr = [];
+  $(".search__checkbox-user:checked").each(function() {
+    idArr.push($(this).attr("data-id"));
+  })
+  let thisURL = $(location).attr('href');
+  $.ajax({
+    url: thisURL + "/delete",
+    type: "DELETE",
+    _method: "DELETE",
+    data: {"users": idArr},
+    headers: {
+      'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function (data) {
+      if(data.result) {
+        location.reload();
+      }
+    },
+    error: function (msg) {
+      console.log("Для разработчика! Ошибка при запросе операций пользователя: ")
+      console.log(msg);
+    }
+  });
+});

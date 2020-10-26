@@ -1,17 +1,3 @@
-/* ВАЛИДАЦИЯ СОГЛАСИЯ НА ОФЕРТУ */
-/*
-const checkAgreeOffer = (e, button, idCheckBox = "agree") => {
-	if($("#" + idCheckBox).prop("checked") == true) {
-		$(button).prop("disabled", false);
-	}else {
-		e.preventDefault();
-	}
-}
-
-$(".button_disabled").click(function(e) {
-	checkAgreeOffer(e, ".button_disabled");
-});*/
-
 /* NAV меню и бургер */
 
 $(".burger").click(function() {
@@ -23,6 +9,15 @@ $(".burger").click(function() {
 /* ВВОД В ИНПУТ НОМЕР ТЕЛЕФОНА */
 
 //в работе
+
+/* Удаление содержимого инпутов при удачной отправке данных */
+
+let clearInputs = (inputs) => {
+  for(let i = 0; i < inputs.length; i++) {
+    console.log(inputs[i].value);
+    inputs[i].value = "";
+  }
+}
 
 /* Моадльное окно */
 
@@ -58,10 +53,13 @@ $(".modal__bg, .modal__link_cancel").click(function(event) {
 	deactiveModal();
 });
 
-let activeModal = () => {
+let activeModal = (classNameWindow = "modal__season") => {
 	$(".modal").addClass("modal_active");
 	$(".modal__bg").addClass("modal__bg_active");
-	$(".modal__season").addClass("modal__season_active");
+	$("." + classNameWindow).addClass(classNameWindow + "_active");
+	$(".section").addClass("section_smear");
+	$(".header-lk").addClass("section_smear");
+	$("section").addClass("section_smear");
 }
 
 let deactiveModal = () => {
@@ -69,11 +67,15 @@ let deactiveModal = () => {
 	$(".modal__bg").removeClass("modal__bg_active");
 	$(".modal__season").removeClass("modal__season_active");
 	$(".modal__consult").removeClass("modal__consult_active");
+	$(".modal-success__window").removeClass("modal-success__window_active");
+	$(".modal-cancel__window").removeClass("modal-cancel__window_active");
+	$(".modal-error__window").removeClass("modal-error__window_active");
+	$(".section_smear").removeClass("section_smear");
 }
 
 /* ВАЛИДАЦИЯ ВСЕХ ФОРМ */
 
-$(".call__form, .registr__form, .author__form").submit(function(e) {
+$(".call__form, .order__form, .registr__form, .author__form").submit(function(e) {
 	let data = {};
 	let error = 0;
 	let classNameForm = $(this).attr("class").replace(/(.*)__form$/, '$1');
@@ -99,30 +101,14 @@ $(".call__form, .registr__form, .author__form").submit(function(e) {
 		if($(this).hasClass("registr__form")) {
 			validRegistr(thisURL, data, this, classNameForm);
 		}
-	}
-	//data.classNameForm = classNameForm;
-	/*console.log(data);
-	if(error == 0) {
-		$.post("operations", {validation: JSON.stringify(data)}, function (data) {
-		  	result = JSON.parse(data);
-		  	console.log(result);
-		  	if(result.error == 1) {
-		  		activePromtp(result.title, result.text,
-		  			result.name, result.classNameForm);
-		  	}
-		  	if(result.error == false && result.classNameForm == "registr") {
-		  		activePopup();
-		  	}
-
-		  	if(result.error == false && result.classNameForm == "author") {
-		  		window.location = $(".author").attr("data-link");
-		  	}
-
-		  	if(result.error == false && result.classNameForm == "call") {
-		  		activePopup();
-		  	}
-		});
-	}*/ 	
+		if($(this).hasClass("call__form")) {
+			validCall(thisURL, data, this, classNameForm);
+		}
+		if($(this).hasClass("order__form")) {
+			data.agree = true;
+			validCall(thisURL + "call", data, this, classNameForm);
+		}
+	}	
 });
 
 let validAuthor = (thisURL, data, form, classNameForm) => {
@@ -150,7 +136,6 @@ let validAuthor = (thisURL, data, form, classNameForm) => {
 }
 
 let validRegistr = (thisURL, data, form, classNameForm) => {
-	console.log(thisURL + "/valid");
 	$.ajax({
 		url: thisURL + "/valid",
 		type: "POST",
@@ -161,6 +146,31 @@ let validRegistr = (thisURL, data, form, classNameForm) => {
 		success: function (data) {
 			if(data === "1") {
 				activePopup();
+			}
+		},
+		error: function (msg) {
+			console.log("Для разработчика! Ошибка при валидации регистрации или авторизации: ")
+			console.log(msg);
+			let inputName = Object.keys(msg.responseJSON.errors)[0];
+			activePromtp("Неверно заполнено поле",
+				"Проверьте правильность заполнения",
+				inputName, classNameForm);
+		}
+	});
+}
+
+let validCall = (thisURL, data, form, classNameForm) => {
+	$.ajax({
+		url: thisURL + "/valid",
+		type: "POST",
+		data: data,
+		headers: {
+			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+		},
+		success: function (data) {
+			if(data === "1") {
+				activePopup();
+				clearInputs($(".order__input"));
 			}
 		},
 		error: function (msg) {
@@ -191,16 +201,16 @@ let activePromtp = (title, describe, input, className, time = 5000) => {
 
 let activePopup = (className = "popup") => {
 	$("." + className).addClass("popup_active");
+	$(".popup__bg").addClass("popup__bg_active");
 	$(".popup__form").addClass("popup__form_active");
 	$(".popup__window").addClass("popup__window_active");
-	$(".section").addClass("section_smear");
-	$(".header-lk").addClass("section_smear");
-	$("section").addClass("section_smear");
+	$(".section, section, .header-lk").addClass("section_smear");
 }
 
 let desActivePopup = () => {
 	$(".popup__form_active").removeClass("popup__form_active");
 	$(".popup_active").removeClass("popup_active");
+	$(".popup__bg_active").removeClass("popup__bg_active");
 	$(".popup__window_active").removeClass("popup__window_active");
 	$(".section_smear").removeClass("section_smear");
 }
@@ -217,17 +227,6 @@ $(".popup_register").click(function(e) {
 $(".pay-false__button").click(function() {
 	$(".pay-false").addClass("pay-false_no-active");
 	$(".pay-false__window").addClass("pay-false__window_no-active");
-});
-
-/* MOBILE VERSION */
-
-$(".footer__company").click(function(e) {
-	event.preventDefault();
-	$(".footer__modal").addClass("footer__modal_active");
-});
-
-$(".footer__close, .footer__button").click(function() {
-	$(".footer__modal").removeClass("footer__modal_active");
 });
 
 /* ВАЛИДАЦИЯ ЧЕК БОКС ОФЕРТЫ ПРИ РЕГИСТРАЦИИ */
@@ -282,7 +281,14 @@ let getTable = (status, count = 4) => {
 		},
 		success: function (data) {
 			$(".office__preloader_active").removeClass("office__preloader_active");
-			$(".office__table").html(data);
+			if(data.count !== 0) {
+				$(".office__table").html(data.table);
+			}else {
+				$(".office__table").html("Оплаты не найдены");
+			}
+			if(data.count < 5) {
+				$(".office__add").css("display", "none");
+			}
 		},
 		error: function (msg) {
 			console.log("Для разработчика! Ошибка при запросе операций пользователя: ")
@@ -360,10 +366,11 @@ $(".office__cart-button").click(function() {
 });
 
 $(".popup").click(function(e) {
+	if($(e.target).hasClass("popup__button-ok")) {
+		return;//попап перезвонить клиенту, кнопка - ссылка на главную
+	}
+
 	e.preventDefault();
-	/*if($(e.target).hasClass("registr__button-popup")) {
-		window.location.replace($(e.target).attr("href"));
-	}*/
 	if( $(e.target).hasClass("popup__content") ||
 		$(e.target).hasClass("popup__button_cancel") ||
 		$(e.target).hasClass("popup__close") ) {
@@ -372,7 +379,6 @@ $(".popup").click(function(e) {
 });
 
 $(".popup__button_pay").click(function(e) {
-	
 	let value = $(".popup__input").val();
 	if(value === "") {
 		activePromtp("Пустое поле", "Заполните поле ввода", 
@@ -417,7 +423,10 @@ let changeAutopay = (path) => {
 				$(".tariff__autopay").html(data.html).
 				attr('data-link', data.link);
 			}
-			desActivePopup();
+			if(data.html === "включить") {
+				desActivePopup();
+				activePopup("popup_auto-pay-ok");
+			}
 		},
 		error: function (error) {
 			console.log("Для разработчика! Ошибка при включении/отключении автоплатежа: ");
@@ -430,11 +439,46 @@ $(".popup__button_auto-no").click(function() {
 	desActivePopup();
 });
 
+/* модальные окна на стра личного кабинета */
+$(".office__button_cancel").click(function() {
+	activeModal("modal-cancel__window");
+});
+
+$(".modal-cancel__cancel").click(function(e) {
+	e.preventDefault();
+	deactiveModal();
+})
+
+$(".popup__close").click(function() {
+	deactiveModal();
+})
+
 //проверка существования попапа с результатом оплаты/пополнения кошелька
-let existResultPay = () => {
-	if($(".popup_result-pay").length != 0) {
-		activePopup("popup_result-pay");
+let existResultModal = (classNameWindow) => {
+	if($("." + classNameWindow).length > 0) {
+		activeModal(classNameWindow);
 	}
 }
 
-existResultPay();
+existResultModal("modal-success__window");
+existResultModal("modal-error__window");
+
+/* MOBILE VERSION */
+
+$(".footer__company").click(function(e) {
+	event.preventDefault();
+	$(".footer__modal").addClass("footer__modal_active");
+});
+
+$(".footer__close, .footer__button").click(function() {
+	$(".footer__modal").removeClass("footer__modal_active");
+});
+
+$(".footer__link_exit").click(function(e) {
+	event.preventDefault();
+	$(".exit").addClass("exit_active");
+});
+
+$(".exit__close, .exit__button_cancel").click(function() {
+	$(".exit").removeClass("exit_active");
+});

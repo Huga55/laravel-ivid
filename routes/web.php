@@ -21,6 +21,7 @@ Route::get('/solution', 'MainController@solution')->name('solution');
 Route::get('/contact', 'MainController@contact')->name('contact');
 Route::get('/politics', 'MainController@politic')->name('politic');
 Route::get('/score', 'MainController@score')->name('score');
+Route::get('/call', 'CallController@getPage')->name('call');
 
 /* registration */
 Route::get('/registration', 'AuthController@register')->name('register');
@@ -33,6 +34,8 @@ Route::get('/authorization', 'AuthController@auth')->name('author');
 Route::post('/authorization/valid', 'AuthController@authValidation')->name('author.validation');
 Route::post('/authorization/enter', 'AuthController@postAuth')->name('enter');
 
+/* call */
+Route::post('/call/valid', 'CallController@callValidation')->name('call.validation');
 
 /* lk */
 Route::group(['middleware' => 'auth','prefix' => 'lk', 'namespace' => 'lk'], function() {
@@ -55,25 +58,30 @@ Route::group(['namespace' => 'pay'], function() {
 	/* оплата внутреннего кошелька */
 	Route::post('/pay/purse', 'PayController@purseUp')->name('pay.purse.up');
 	/* можно вручную вбить страницу! нужны динамичекие данные в таблицу БД и динамическая переменная {token} */
-	Route::get('/pay/purse/success', 'PayController@purseSuccess')->name('pay.purse.up.success');
+	Route::get('/pay/purse/success/{token}', 'PayController@purseSuccess')->name('pay.purse.up.success');
 	Route::get('/pay/purse/fail', 'PayController@purseFail')->name('pay.purse.up.fail');
 	/* оплата тарифа */
 	Route::post('/pay/tariff', 'PayController@payTariff')->name('pay.tariff');
 	/* можно вручную вбить страницу! нужны динамичекие данные в таблицу БД и динамическая переменная {token} */
-	Route::get('/pay/tariff/success', 'PayController@paySuccess')->name('pay.tariff.success');
+	Route::get('/pay/tariff/success/{token}', 'PayController@paySuccess')->name('pay.tariff.success');
 	Route::get('/pay/tariff/fail', 'PayController@payFail')->name('pay.tariff.fail');
 });
 
 
 /* admin */
 Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
-	Route::match(['get', 'post'], '/login', 'AdminController@author')->name('admin.author');
+	Route::match(['get', 'post'], '/login', 'AuthController@author')->name('admin.author');
 	Route::group(['middleware' => 'isAdmin'], function() {
-		Route::get('/', 'AdminController@main')->name('admin.main');
-		Route::get('/operations/{count}/{status}', 'AdminController@getOperations')->name('admin.operations');
-		Route::get('/search', 'AdminController@searchPage')->name('admin.search');
-		Route::get('/search/result/{name}', 'AdminController@getResult')->name('admin.search.result');
-		Route::get('/user-page/{id}', 'AdminController@getUserPage')->name('admin.get.user.page');
+		Route::get('/', 'MainController@main')->name('admin.main');
+		Route::get('/operations/{count}/{status}', 'MainController@getOperations')->name('admin.operations');
+		Route::get('/search', 'SearchController@searchPage')->name('admin.search');
+		Route::get('/search/result/{name}', 'SearchController@getResult')->name('admin.search.result');
+		Route::get('/user-page/{id}', 'SearchController@getUserPage')->name('admin.get.user.page');
+		Route::post('search/valid', 'SearchController@registrValidation')->name('admin.registr.valid');
+		Route::delete('search/delete', 'SearchController@deleteUsers')->name('admin.user.delete');
+
+		/*logout admin*/
+		Route::get('/logout', 'AuthController@logout')->name('admin.logout');
 	});
 });
 

@@ -39,6 +39,47 @@
 		</div>
 	</div>	
 </div>
+<div class="modal">
+	<div class="modal__bg"></div>
+	<div class="modal-cancel__window modal-pay__window">
+		<span class="popup__close"></span>
+		<img src="{{ asset('img/modal/cancel.svg') }}" alt="" class="modal__img">
+		<div class="modal-pay__title modal-cancel__title">
+			Вы уверены, что хотите отключить тариф «{{ $tariff_name }}» ?
+		</div>
+		<div class="modal__buttons">
+			<a href="#" class="modal-cancel__cancel modal-cancel__button">
+				нет
+			</a>
+			<a href="{{ route('tariff.delete') }}" class="modal-cancel__success modal-cancel__button">
+				Да, отключить
+			</a>
+		</div>
+	</div>
+	@if($result_pay['is_exist'] && $result_pay['result'])
+	<div class="modal-success__window modal-pay__window">
+		<span class="popup__close"></span>
+		<img src="{{ asset('img/modal/success.svg') }}" alt="" class="modal__img">
+		<div class="modal-pay__title">
+			Баланс успешно пополнен
+		</div>
+		<div class="modal__text">
+			на сумму {{ $result_pay['price'] }} рублей 
+		</div>
+	</div>
+	@elseif($result_pay['is_exist'] && !$result_pay['result'])
+	<div class="modal-error__window modal-pay__window">
+		<span class="popup__close"></span>
+		<img src="{{ asset('img/modal/error.svg') }}" alt="" class="modal__img">
+		<div class="modal-pay__title">
+			Ошибка, оплата не прошла
+		</div>
+		<div class="modal__text">
+			на сумму {{ $result_pay['price'] }} рублей 
+		</div>
+	</div>
+	@endif
+</div>
 @include('layouts.headers.header-lk')
 <section class="office">
 	<div class="container">
@@ -50,9 +91,9 @@
 							Ваш тариф сейчас:
 						</div>
 						<div class="office__buttons">
-							<a href="{{ route('tariff.delete') }}" class="office__button button">
+							<button class="office__button office__button_cancel button">
 								отключить
-							</a>
+							</button>
 							<a href="{{ route('tariff') }}" class="office__button button">
 								изменить тариф
 							</a>	
@@ -108,4 +149,5 @@
 		</div>
 	</div>
 </section>
+@include('layouts.footer.footer-lk')
 @endsection

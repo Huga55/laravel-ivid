@@ -9,12 +9,20 @@
 		<div class="header-lk__bottom">
 			<ul class="header-lk__nav">
 				<li class="header-lk__elem">
+					@if(url()->full() === route('office') )
+					<a href="{{ route('office') }}" class="header-lk__link header-lk__link_active">
+					@else
 					<a href="{{ route('office') }}" class="header-lk__link">
+					@endif
 						Главная
 					</a>
 				</li>
 				<li class="header-lk__elem">
+					@if(url()->full() === route('tariff') )
+					<a href="{{ route('tariff') }}" class="header-lk__link header-lk__link_active">
+					@else
 					<a href="{{ route('tariff') }}" class="header-lk__link">
+					@endif
 						Услуги
 					</a>
 				</li>

@@ -11,6 +11,6 @@ class Tariff extends Model
 
     public function info()
     {
-    	return $this->hasMany('App\Models\Info');
+    	return $this->belongsTo('App\Models\Info', 'tariff_id', 'id');
     }
 }

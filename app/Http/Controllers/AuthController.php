@@ -34,7 +34,9 @@ class AuthController extends Controller
         $validation = $this->validate($request, [
             'name' => 'required|max:60',
             'email' => 'required|email|unique:users',
-            'phone' => 'required|unique:users',
+            'phone' => array('required', 
+                'unique:users',
+                'regex:/^(8|(\+7))\d{10}$/'),
             'password' => 'required',
             'password_double' => 'required|same:password',
             'agree' => 'accepted',
@@ -54,13 +56,16 @@ class AuthController extends Controller
     	$this->validate($request, [
     		'name' => 'required|max:60',
     		'email' => 'required|email|unique:users',
-    		'phone' => 'required|unique:users',
+    		'phone' => array('required', 
+                'unique:users',
+                'regex:/^(8|(\+7))\d{10}$/'),
     		'password' => 'required',
     		'password_double' => 'required|same:password',
     		'agree' => 'accepted',
     	]);
 
     	$data = $request->all();
+        $data['phone'] = preg_replace('#^(8|(\+7))#',"", $data['phone']);
     	$check = $this->create($data);
 
         $request->session()->put('user', $check);
@@ -104,9 +109,13 @@ class AuthController extends Controller
 
     public function authValidation(Request $request)
     {
+        
         $key = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
-        return Auth::attempt([$key => $request->input('login'),
+        $login = preg_replace('#^(8|(\+7))#',"", $request->input('login'));
+        //$request->input('login') = preg_replace('#^(8|(\+7))#',"", $request->input('login'));
+
+        return Auth::attempt([$key => $login,
                         'password' => $request->input('password'),
                         ]);
     }
